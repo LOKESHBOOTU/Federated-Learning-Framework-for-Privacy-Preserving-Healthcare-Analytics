@@ -1,6 +1,10 @@
+.venv/
 __pycache__/
 *.pyc
-.venv/
-results/plots/*.png
-results/metrics/*.json
-
+.pytest_cache/
+.streamlit/
+streamlit.log
+streamlit.err
+/diabetes_binary_5050split_health_indicators_BRFSS2015.csv
+data/processed/*
+data/clients/*

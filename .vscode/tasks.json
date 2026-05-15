@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Streamlit Dashboard",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "-m",
+        "streamlit",
+        "run",
+        "app.py",
+        "--server.address",
+        "127.0.0.1",
+        "--server.port",
+        "8501"
+      ],
+      "options": {
+        "env": {
+          "PYTHONPATH": "C:\\Users\\lokeshbootu\\AppData\\Roaming\\Python\\Python310\\site-packages"
+        }
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Synthetic CLI Experiment",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "run_experiment.py",
+        "--synthetic-demo",
+        "--clients",
+        "5",
+        "--rounds",
+        "10"
+      ],
+      "options": {
+        "env": {
+          "PYTHONPATH": "C:\\Users\\lokeshbootu\\AppData\\Roaming\\Python\\Python310\\site-packages"
+        }
+      },
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

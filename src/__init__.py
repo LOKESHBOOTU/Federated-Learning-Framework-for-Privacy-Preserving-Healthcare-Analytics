@@ -1,2 +1,1 @@
-"""Project package for federated healthcare experiments."""
-
+"""Federated healthcare analytics project package."""

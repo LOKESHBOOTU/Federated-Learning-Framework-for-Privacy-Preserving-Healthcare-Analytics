@@ -1,97 +1,141 @@
-# Federated Healthcare Benchmark
+# Federated Learning Framework for Privacy-Preserving Healthcare Analytics
 
-This project turns the healthcare CSV datasets in this workspace into a reusable
-federated learning benchmark for tabular healthcare prediction. It now supports
-`heart`, `diabetes`, `liver`, and `kidney` with a shared NumPy logistic
-regression baseline, FedAvg, and FedProx.
+This project implements a presenter-friendly federated learning framework for healthcare analytics. The main use case is diabetes risk prediction using the CDC Diabetes Health Indicators dataset.
 
-## Current scope
+## Recommended Major Project Title
 
-- Reusable project structure for tabular healthcare FL experiments
-- Working centralized baseline for all four datasets
-- Working FedAvg and FedProx simulations for all four datasets
-- Result export to `results/metrics/`
-- Training curve plots to `results/plots/`
-- Benchmark summary export across completed runs
+**Privacy-Preserving Federated Learning Framework for Diabetes Risk Prediction using Differential Privacy**
 
-## Datasets in this workspace
+## What It Includes
 
-- `heart.csv`
-- `diabetes.csv`
-- `indian_liver_patient.csv`
-- `kidney_disease.csv`
+- CDC and original healthcare dataset loading and preprocessing
+- Centralized baselines: Logistic Regression, Random Forest, and MLP
+- Custom federated MLP classifier
+- FedAvg aggregation across simulated hospitals
+- IID and non-IID client partitioning
+- Differential privacy simulation with update clipping and Gaussian noise
+- Streamlit dashboard for presentation and explanation
+- Single patient prediction demo
+- Real-time triage, batch screening, hospital monitoring, and downloadable screening report
 
-The datasets do not share the same schema, so the correct design is one shared
-federated framework with disease-specific experiments rather than a single model
-trained across all rows.
+## Dataset
 
-## Project layout
+Place the CDC Diabetes Health Indicators CSV here:
 
 ```text
-src/
-  core/
-  data/
-  fl/
-  models/
-  experiments/
-data/
-  raw/
-  processed/
-results/
-  metrics/
-  plots/
-docs/
-run_experiment.py
-requirements.txt
+data/raw/cdc_diabetes_health_indicators.csv
 ```
+
+The app also recognizes:
+
+```text
+data/raw/diabetes_binary_health_indicators_BRFSS2015.csv
+data/raw/diabetes_012_health_indicators_BRFSS2015.csv
+```
+
+Original project CSVs such as `diabetes.csv`, `heart.csv`, `kidney_disease.csv`, and `liver.csv` are supported as fallbacks. If none of those exact names exist, the loader uses the first `.csv` file found in `data/raw/`.
+
+## Saved CDC Results
+
+The dashboard has two model modes:
+
+```text
+Saved CDC results
+Simulate hospitals
+```
+
+`Saved CDC results` uses a fixed configuration:
+
+```text
+Hospitals: 5
+Federated rounds: 15
+Local epochs per hospital: 2
+Partition: IID
+Differential privacy: enabled
+DP noise: 0.05
+Learning rate: 0.03
+```
+
+The first time this mode is opened, the app trains the centralized baselines and federated model, then saves reusable artifacts under:
+
+```text
+results/saved_cdc_run/
+```
+
+After that, the dashboard reloads those saved results instead of retraining every time.
+
+`Simulate hospitals` lets the user change hospital count, rounds, local epochs, IID/non-IID partitioning, differential privacy, noise, and learning rate. In this mode the model is trained for the selected simulation settings.
 
 ## Setup
 
-Install dependencies:
-
 ```bash
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-You can leave the CSV files in the project root. The code automatically checks
-both the root folder and `data/raw/` when resolving dataset paths.
-
-## Run a baseline experiment
+## Run The Dashboard
 
 ```bash
-python run_experiment.py baseline --dataset heart
-python run_experiment.py baseline --dataset diabetes
-python run_experiment.py baseline --dataset liver
-python run_experiment.py baseline --dataset kidney
+streamlit run app.py
 ```
 
-## Run a FedAvg experiment
+## Run CLI Experiment
+
+With the CDC dataset:
 
 ```bash
-python run_experiment.py federated --dataset heart --num-clients 5 --rounds 25
-python run_experiment.py federated --dataset diabetes --strategy fedavg --num-clients 5 --rounds 25
+python run_experiment.py --clients 5 --rounds 20 --local-epochs 2 --partition iid
 ```
 
-## Run a FedProx experiment
+For non-IID:
 
 ```bash
-python run_experiment.py federated --dataset kidney --strategy fedprox --proximal-mu 0.01
+python run_experiment.py --clients 5 --rounds 20 --partition non-iid
 ```
 
-## Example with non-IID partitioning
+Without differential privacy:
 
 ```bash
-python run_experiment.py federated --dataset liver --strategy fedavg --partition dirichlet --alpha 0.5
+python run_experiment.py --no-dp
 ```
 
-## Build the benchmark summary
+## Project Structure
 
-```bash
-python run_experiment.py compare
+```text
+.
+|-- app.py
+|-- dashboard/
+|   `-- app.py
+|-- run_experiment.py
+|-- requirements.txt
+|-- data/
+|   |-- raw/
+|   |-- processed/
+|   `-- clients/
+|-- docs/
+|   `-- architecture.md
+|-- results/
+|   |-- metrics/
+|   |-- models/
+|   `-- plots/
+|-- src/
+|   |-- baselines.py
+|   |-- config.py
+|   |-- data.py
+|   |-- evaluation.py
+|   |-- federated.py
+|   `-- model.py
+`-- tests/
+    `-- test_smoke.py
 ```
 
-## Next extensions
+## Best Model Choice
 
-1. Add differential privacy and secure aggregation variants
-2. Add hyperparameter sweep support for each dataset
-3. Add a simple dashboard for result exploration
+The final recommended model is:
+
+```text
+Federated MLP + FedAvg + Differential Privacy
+```
+
+This is strong enough for a final-year AIML project, but still understandable during evaluation.

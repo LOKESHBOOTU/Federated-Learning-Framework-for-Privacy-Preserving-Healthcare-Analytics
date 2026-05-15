@@ -1,21 +1,41 @@
 # Architecture
 
-## Goal
+## High-Level Flow
 
-Provide a single tabular federated learning framework that can run separate
-healthcare prediction experiments per dataset.
+```text
+Healthcare Dataset
+        |
+Preprocessing and Scaling
+        |
+Client Partitioning
+        |
++-------------------+  +-------------------+  +-------------------+
+| Hospital Client 1 |  | Hospital Client 2 |  | Hospital Client N |
+| Local MLP Training|  | Local MLP Training|  | Local MLP Training|
++---------+---------+  +---------+---------+  +---------+---------+
+          |                      |                      |
+          | Model updates only   | Model updates only   |
+          +----------------------+----------------------+
+                                 |
+                        Differential Privacy
+                       Clip update + add noise
+                                 |
+                            FedAvg Server
+                                 |
+                           Global MLP Model
+                                 |
+                    Metrics, Explainability, Demo UI
+```
 
-## Current implementation
+## Why This Architecture Preserves Privacy
 
-- Dataset registry for `heart`, `diabetes`, `liver`, and `kidney`
-- Shared tabular preprocessing contract returning the same `TabularSplit` shape
-- Custom NumPy logistic regression model
-- FedAvg and FedProx simulation across synthetic clients
-- Centralized baseline for comparison
-- JSON metrics, Markdown summary, and plot export
+Raw patient records remain local to each simulated hospital. The central server only receives model parameters or parameter updates. Differential privacy further reduces leakage risk by clipping unusually large updates and adding Gaussian noise before aggregation.
 
-## Extension path
+## Experiments To Show
 
-- Add privacy-preserving strategy variants such as differential privacy
-- Add richer comparison dashboards across datasets and strategies
-- Plug in alternative model families while keeping the same dataset registry
+- Centralized ML vs federated ML
+- IID vs non-IID hospital distributions
+- With differential privacy vs without differential privacy
+- Accuracy, precision, recall, F1 score, and ROC-AUC
+- Client-wise record distribution and positive-class ratio
+- Patient triage, batch screening, hospital monitoring, and screening report export

@@ -1,0 +1,41 @@
+{
+  "dataset_name": "CDC Diabetes Health Indicators 50/50 Balanced",
+  "source_path": "C:\\Federated Learning framework for privacy preserving system for healthcare Analytics\\data\\raw\\diabetes_binary_5050split_health_indicators_BRFSS2015.csv",
+  "target_name": "Diabetes_binary",
+  "feature_names": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "BMI",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "MentHlth",
+    "PhysHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "fixed_config": {
+    "num_clients": 5,
+    "rounds": 15,
+    "local_epochs": 2,
+    "batch_size": 32,
+    "learning_rate": 0.03,
+    "partition": "iid",
+    "use_dp": true,
+    "clip_norm": 1.0,
+    "noise_multiplier": 0.05,
+    "random_state": 42
+  },
+  "prediction_source": "saved CDC federated model"
+}

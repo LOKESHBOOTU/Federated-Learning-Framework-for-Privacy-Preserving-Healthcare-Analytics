@@ -1,0 +1,36 @@
+{
+  "dataset_name": "Heart Disease Cleveland UCI",
+  "source_path": "C:\\Federated Learning framework for privacy preserving system for healthcare Analytics\\heart_cleveland_upload.csv",
+  "target_name": "condition",
+  "feature_names": [
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "artifact_key": "heart_disease",
+  "fixed_config": {
+    "num_clients": 3,
+    "rounds": 40,
+    "local_epochs": 3,
+    "batch_size": 32,
+    "learning_rate": 0.02,
+    "hidden1": 64,
+    "hidden2": 32,
+    "partition": "iid",
+    "use_dp": true,
+    "clip_norm": 1.0,
+    "noise_multiplier": 0.01,
+    "random_state": 42
+  },
+  "prediction_source": "saved fixed federated model"
+}
