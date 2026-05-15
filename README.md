@@ -390,10 +390,14 @@ metadata.json
 ## Screenshots / Output
 
 The project includes a Streamlit interface for disease prediction, model comparison, dataset inspection, and federated training visualization.
+<img width="1435" height="704" alt="image" src="https://github.com/user-attachments/assets/8e7a1625-60d5-4a4c-bba3-4180881d4ace" />
+
 
 ### Prediction Demo
 
 Users can enter patient health details and receive a disease risk output.
+<img width="1421" height="862" alt="image" src="https://github.com/user-attachments/assets/3cbdeec9-64d1-4498-930f-dc45ad93d5dd" />
+
 
 ### Model Comparison
 
@@ -405,6 +409,7 @@ Random Forest
 Centralized MLP
 Federated MLP + FedAvg + DP
 ```
+<img width="1434" height="731" alt="image" src="https://github.com/user-attachments/assets/bcb3fee6-ebaa-4b23-9b3b-ece07663ab05" />
 
 ### Dataset View
 
