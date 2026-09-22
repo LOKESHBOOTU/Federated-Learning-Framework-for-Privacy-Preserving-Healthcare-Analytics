@@ -1,14 +1,50 @@
 from __future__ import annotations
 
+import os
 from io import BytesIO
 
 import fitz
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageOps
 import pytesseract
 
 
+_TESSERACT_CANDIDATES = [
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+    r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+]
+
+
+def _configure_tesseract() -> None:
+    """Use the normal PATH first, then common Windows installation paths."""
+    configured = getattr(pytesseract.pytesseract, "tesseract_cmd", "tesseract")
+    if configured != "tesseract" and os.path.isfile(configured):
+        return
+
+    for candidate in _TESSERACT_CANDIDATES:
+        if os.path.isfile(candidate):
+            pytesseract.pytesseract.tesseract_cmd = candidate
+            return
+
+
+def _prepare_for_ocr(image: Image.Image) -> Image.Image:
+    """Improve contrast and resolution for lab-report OCR."""
+    image = image.convert("L")
+    image = ImageOps.autocontrast(image)
+    image = image.resize((image.width * 2, image.height * 2), Image.Resampling.LANCZOS)
+    image = ImageEnhance.Contrast(image).enhance(1.5)
+    return image
+
+
 def _ocr_image(image: Image.Image) -> str:
-    return pytesseract.image_to_string(image)
+    _configure_tesseract()
+    prepared = _prepare_for_ocr(image)
+
+    # PSM 6 works well for structured reports; PSM 11 helps sparse layouts.
+    candidates = [
+        pytesseract.image_to_string(prepared, config="--psm 6"),
+        pytesseract.image_to_string(prepared, config="--psm 11"),
+    ]
+    return max(candidates, key=lambda value: len(" ".join(value.split()))).strip()
 
 
 def extract_text_from_pdf(file_bytes: bytes) -> str:
@@ -20,8 +56,8 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
         doc.close()
 
 
-def extract_text_from_scanned_pdf(file_bytes: bytes, dpi: int = 180) -> str:
-    """Render PDF pages and run local Tesseract OCR."""
+def extract_text_from_scanned_pdf(file_bytes: bytes, dpi: int = 240) -> str:
+    """Render PDF pages at high resolution and run local Tesseract OCR."""
     doc = fitz.open(stream=file_bytes, filetype="pdf")
     texts = []
     try:
@@ -38,7 +74,7 @@ def extract_text_from_scanned_pdf(file_bytes: bytes, dpi: int = 180) -> str:
 
 def extract_text_from_image(file_bytes: bytes) -> str:
     image = Image.open(BytesIO(file_bytes)).convert("RGB")
-    return _ocr_image(image).strip()
+    return _ocr_image(image)
 
 
 def process_document(file_bytes: bytes, filename: str) -> tuple[str, str]:
@@ -47,7 +83,8 @@ def process_document(file_bytes: bytes, filename: str) -> tuple[str, str]:
 
     if suffix == "pdf":
         text = extract_text_from_pdf(file_bytes)
-        if len(" ".join(text.split())) >= 30:
+        compact = " ".join(text.split())
+        if len(compact) >= 30:
             return text, "PDF text extraction"
         return extract_text_from_scanned_pdf(file_bytes), "Local Tesseract OCR"
 
